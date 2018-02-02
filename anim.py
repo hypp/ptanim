@@ -225,14 +225,28 @@ for gif_frame in ImageSequence.Iterator(gif):
     pacmac_up_going_right.append(gif_frame.copy())
 
 pacmac_up_going_left = []
-#gif_frames = ImageSequence.Iterator(gif)
 for gif_frame in pacmac_up_going_right:
     gif_frame = gif_frame.transpose(Image.FLIP_LEFT_RIGHT)
     pacmac_up_going_left.append(gif_frame.copy())
 
+pacman_down_going_right = []
+for gif_frame in pacmac_up_going_right:
+    new_frame = Image.new(gif_frame.mode, gif_frame.size)
+    new_frame.paste(gif_frame, (0, 8))
+    pacman_down_going_right.append(new_frame)
+
+pacman_down_going_left = []
+for gif_frame in pacmac_up_going_left:
+    new_frame = Image.new(gif_frame.mode, gif_frame.size)
+    new_frame.paste(gif_frame, (0, 8))
+    pacman_down_going_left.append(new_frame)
+
 
 add_frames(frames, pacmac_up_going_right)
+add_frames(frames, pacman_down_going_right)
 add_frames(frames, pacmac_up_going_left)
+add_frames(frames, pacman_down_going_left)
+
 
 while len(frames) % 4 != 0:
     frame_no = len(frames)
