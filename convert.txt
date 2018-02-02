@@ -1,0 +1,1 @@
+sox bass.wav -b 8 -r 11025 bass_amiga.wav
