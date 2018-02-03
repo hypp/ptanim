@@ -349,6 +349,10 @@ for no in pattern_sequence:
         max_pattern = no
 num_patterns = max_pattern+1
 version_mark = data[1080:1080+4]
+# Fix format for > 64 patterns
+data[1080+1] = "!"
+data[1080+3] = "!"
+
 
 pattern_data = data
 
