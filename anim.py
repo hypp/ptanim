@@ -147,7 +147,7 @@ def add_frames(frames, pacmac_up_going_right):
 
 
 
-with open("anim.mod", "rb") as input_file:
+with open("pacman.mod", "rb") as input_file:
     data = bytearray(input_file.read())
 
 # No sanity checks
@@ -159,6 +159,11 @@ songname = data[0:20]
 songlength = data[950]
 restart_position = data[951]
 pattern_sequence = data[952:952+128]
+max_pattern = 0
+for no in pattern_sequence:
+    if no > max_pattern:
+        max_pattern = no
+num_patterns = max_pattern+1
 version_mark = data[1080:1080+4]
 
 pattern_data = data
@@ -175,7 +180,7 @@ patterns = []
 
 current_pos = 1084
 no = 0
-while current_pos < len(pattern_data) - 64*4*4:
+for no in range(0, num_patterns):
     pattern = Pattern()
     for _ in range(0, 64):
         row = Row()
@@ -204,16 +209,10 @@ while current_pos < len(pattern_data) - 64*4*4:
 
         pattern.rows.append(row)
 
-    print "pattern: %s\n%s" % (no, pattern)
-    no += 1
+    patterns.append(pattern)
+    #print "pattern: %s\n%s" % (no, pattern)
 
-x = 0
-x_inc = 1
-y = 2
-y_inc = 1
-
-poslist = []
-
+samples_start = current_pos
 
 frames = []
 
@@ -241,11 +240,34 @@ for gif_frame in pacmac_up_going_left:
     new_frame.paste(gif_frame, (0, 8))
     pacman_down_going_left.append(new_frame)
 
+pacman_both_up_going_left = []
+for i in range(0, len(pacman_down_going_right)):
+    tmp = pacmac_up_going_left[i]
+    up = pacmac_up_going_left[i].copy().crop((0,0,4*5,7))
+    down = pacman_down_going_right[i].copy().crop((0,8,4*5,15))
+    new_frame = Image.new(tmp.mode, tmp.size)
+    new_frame.paste(up, (0,0))
+    new_frame.paste(down, (0, 8))
+    pacman_both_up_going_left.append(new_frame)
+
+pacman_both_up_going_right = []
+for i in range(0, len(pacman_down_going_left)):
+    tmp = pacmac_up_going_right[i]
+    up = pacmac_up_going_right[i].copy().crop((0,0,4*5,7))
+    down = pacman_down_going_left[i].copy().crop((0,8,4*5,15))
+    new_frame = Image.new(tmp.mode, tmp.size)
+    new_frame.paste(up, (0,0))
+    new_frame.paste(down, (0, 8))
+    pacman_both_up_going_left.append(new_frame)
+
 
 add_frames(frames, pacmac_up_going_right)
 add_frames(frames, pacman_down_going_right)
 add_frames(frames, pacmac_up_going_left)
 add_frames(frames, pacman_down_going_left)
+add_frames(frames, pacman_both_up_going_left)
+add_frames(frames, pacman_both_up_going_right)
+
 
 
 while len(frames) % 4 != 0:
@@ -256,84 +278,39 @@ while len(frames) % 4 != 0:
 
 frames[0].rows[0].channels[0].effect = 0xf
 frames[0].rows[0].channels[0].params = 0x3
-
-
-# Test, generate X frames
-# One frame is 15 rows
-#frames = []
-#for i in range(0, 124):
-#    frame = []
-#    for _ in range(0, 15):
-#        row = Row()
-#        for _ in range(0, 4):
-#            channel = Channel()
-#            channel.period = 0 
-#            channel.instrument = 0
-#            channel.effect = 0
-#            channel.params = 0
-#            row.channels.append(channel)
-#        frame.append(row)
-
-#    poslist.insert(0, (x,y))
-#    if len(poslist) > 5:
-#        poslist.pop()
-
-#    for xpos,ypos in poslist:
-#        chn = xpos / 5
-#        mod = xpos % 5
-#        if mod == 0:
-            # hi sample no
-#            frame[ypos].channels[chn].instrument = 0x10
-#        elif mod == 1:
-            # lo sample no
-#            frame[ypos].channels[chn].instrument = 0x01
-#        elif mod == 2:
-            # effect
-#            frame[ypos].channels[chn].effect = 0x1
-#        elif mod == 3:
-            # effect data hi
-#            frame[ypos].channels[chn].params = 0x10
-#        elif mod == 4:
-            # effect data lo
-#            frame[ypos].channels[chn].params = 0x1
-#        else:
-#            print "wtf: %s %s" % (mod, xpos)
-#            sys.exit(1)
-
-#    pos = 15*(i%4)+7
-#    next_pos = pos+15
-#    next_pattern = i/4
-#    if next_pos > 64:
-        # Go to next pattern
-#        next_pos = 7
-#        next_pattern += 1
-
-#    hibyte = next_pos / 10
-#    lobyte = next_pos % 10
-#    print i, pos, next_pos, hibyte, lobyte, next_pattern
-#    frame[7].channels[2].effect = 0xb
-#    frame[7].channels[2].params = next_pattern
-#    frame[7].channels[3].effect = 0xd
-#    frame[7].channels[3].params = (hibyte << 4) | lobyte
-
-#    frames.append(frame)
-
-#    x += x_inc
-#    y += y_inc
-#    if x < 0:
-#        x = 0
-#        x_inc = -x_inc
-#    if x >= 5*4:
-#        x = 5*4-1
-#        x_inc = -x_inc
-#    if y < 0:
-#        y = 0
-#        y_inc = -y_inc
-#    if y >= 15:
-#        y = 15-1
-#        y_inc = -y_inc
-
     
+# Grab one row from the original patterns
+# and store it at pos 7 in the frames
+i = 0
+for pattern in patterns:
+    for row in pattern.rows:
+        frame = frames[i]
+
+        frame.rows[7].channels[0].period = row.channels[0].period
+        frame.rows[7].channels[0].instrument = row.channels[0].instrument
+        frame.rows[7].channels[0].effect = row.channels[0].effect
+        frame.rows[7].channels[0].params = row.channels[0].params
+
+        frame.rows[7].channels[1].period = row.channels[1].period
+        frame.rows[7].channels[1].instrument = row.channels[1].instrument
+        frame.rows[7].channels[1].effect = row.channels[1].effect
+        frame.rows[7].channels[1].params = row.channels[1].params
+
+        frame.rows[7].channels[2].period = row.channels[2].period
+        frame.rows[7].channels[2].instrument = row.channels[2].instrument
+
+        frame.rows[7].channels[3].period = row.channels[3].period
+        frame.rows[7].channels[3].instrument = row.channels[3].instrument
+        
+        i += 1
+
+        if i >= len(frames):
+            break
+
+    if i >= len(frames):
+        break
+
+
 new_patterns = []
 
 pattern = Pattern()
@@ -359,6 +336,7 @@ with open("anim2.mod", "wb") as output_file:
     output_file.write(data[0:1084])
     for pattern in new_patterns:
         output_file.write(pattern.to_bytes())
+    output_file.write(data[samples_start:])
 
 
 
