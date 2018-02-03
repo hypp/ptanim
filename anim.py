@@ -260,6 +260,26 @@ for i in range(0, len(pacman_down_going_left)):
     new_frame.paste(down, (0, 8))
     pacman_both_up_going_left.append(new_frame)
 
+pacman_both_going_right = []
+for i in range(0, len(pacman_down_going_right)):
+    tmp = pacmac_up_going_right[i]
+    up = pacmac_up_going_right[i].copy().crop((0,0,4*5,7))
+    down = pacman_down_going_right[i].copy().crop((0,8,4*5,15))
+    new_frame = Image.new(tmp.mode, tmp.size)
+    new_frame.paste(up, (0,0))
+    new_frame.paste(down, (0, 8))
+    pacman_both_going_right.append(new_frame)
+
+pacman_both_going_left = []
+for i in range(0, len(pacman_down_going_left)):
+    tmp = pacmac_up_going_left[i]
+    up = pacmac_up_going_left[i].copy().crop((0,0,4*5,7))
+    down = pacman_down_going_left[i].copy().crop((0,8,4*5,15))
+    new_frame = Image.new(tmp.mode, tmp.size)
+    new_frame.paste(up, (0,0))
+    new_frame.paste(down, (0, 8))
+    pacman_both_going_left.append(new_frame)
+
 
 add_frames(frames, pacmac_up_going_right)
 add_frames(frames, pacman_down_going_right)
@@ -267,6 +287,8 @@ add_frames(frames, pacmac_up_going_left)
 add_frames(frames, pacman_down_going_left)
 add_frames(frames, pacman_both_up_going_left)
 add_frames(frames, pacman_both_up_going_right)
+add_frames(frames, pacman_both_going_right)
+add_frames(frames, pacman_both_going_left)
 
 
 
