@@ -434,14 +434,17 @@ for frame in frames:
 
 
 if len(new_patterns) > 100:
-    new_patterns = new_patterns[:99]
+    new_patterns = new_patterns[:100]
 
+# Stop song
+new_patterns[-1].rows[52].channels[0].effect = 0xf
+new_patterns[-1].rows[52].channels[0].params = 0x0
 
 
 for i in range(0, len(new_patterns)):
     data[952+i] = i
 
-data[950] = len(new_patterns)
+data[950] = len(new_patterns)+1
 
 with open("anim2.mod", "wb") as output_file:
     output_file.write(data[0:1084])
