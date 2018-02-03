@@ -128,8 +128,8 @@ class Frame(object):
         self.rows[7].channels[3].params = (hibyte << 4) | lobyte
 
 
-def add_frames(frames, pacmac_up_going_right):
-    for gif_frame in pacmac_up_going_right:
+def add_frames(frames, pacman_up_going_right):
+    for gif_frame in pacman_up_going_right:
 
         frame_no = len(frames)
 
@@ -145,6 +145,161 @@ def add_frames(frames, pacmac_up_going_right):
 
         frames.append(frame)
 
+def add_pacman():
+
+    frames = []
+
+    gif = Image.open("img/animation.gif")
+
+    pacman_up_going_right = []
+    #gif_frames = ImageSequence.Iterator(gif)
+    for gif_frame in ImageSequence.Iterator(gif):
+        pacman_up_going_right.append(gif_frame.copy())
+    frames.append(pacman_up_going_right)
+
+    pacman_up_going_left = []
+    for gif_frame in pacman_up_going_right:
+        gif_frame = gif_frame.transpose(Image.FLIP_LEFT_RIGHT)
+        pacman_up_going_left.append(gif_frame.copy())
+    frames.append(pacman_up_going_left)
+
+    pacman_down_going_right = []
+    for gif_frame in pacman_up_going_right:
+        new_frame = Image.new(gif_frame.mode, gif_frame.size)
+        new_frame.paste(gif_frame, (0, 8))
+        pacman_down_going_right.append(new_frame)
+    frames.append(pacman_down_going_right)
+
+    pacman_down_going_left = []
+    for gif_frame in pacman_up_going_left:
+        new_frame = Image.new(gif_frame.mode, gif_frame.size)
+        new_frame.paste(gif_frame, (0, 8))
+        pacman_down_going_left.append(new_frame)
+    frames.append(pacman_down_going_left)
+
+    pacman_both_up_going_left = []
+    for i in range(0, len(pacman_down_going_right)):
+        tmp = pacman_up_going_left[i]
+        up = pacman_up_going_left[i].copy().crop((0,0,4*5,7))
+        down = pacman_down_going_right[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        pacman_both_up_going_left.append(new_frame)
+    frames.append(pacman_both_up_going_left)
+
+    pacman_both_up_going_right = []
+    for i in range(0, len(pacman_down_going_left)):
+        tmp = pacman_up_going_right[i]
+        up = pacman_up_going_right[i].copy().crop((0,0,4*5,7))
+        down = pacman_down_going_left[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        pacman_both_up_going_left.append(new_frame)
+    frames.append(pacman_both_up_going_right)
+
+    pacman_both_going_right = []
+    for i in range(0, len(pacman_down_going_right)):
+        tmp = pacman_up_going_right[i]
+        up = pacman_up_going_right[i].copy().crop((0,0,4*5,7))
+        down = pacman_down_going_right[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        pacman_both_going_right.append(new_frame)
+    frames.append(pacman_both_going_right)
+
+    pacman_both_going_left = []
+    for i in range(0, len(pacman_down_going_left)):
+        tmp = pacman_up_going_left[i]
+        up = pacman_up_going_left[i].copy().crop((0,0,4*5,7))
+        down = pacman_down_going_left[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        pacman_both_going_left.append(new_frame)
+    frames.append(pacman_both_going_left)
+
+    return frames
+
+def add_ghost():
+
+    frames = []
+
+    gif = Image.open("img/animation_ghost.gif")
+
+    ghost_up_going_right = []
+    #gif_frames = ImageSequence.Iterator(gif)
+    for gif_frame in ImageSequence.Iterator(gif):
+        ghost_up_going_right.append(gif_frame.copy())
+    frames.append(ghost_up_going_right)
+
+    ghost_up_going_left = []
+    for gif_frame in ghost_up_going_right:
+        gif_frame = gif_frame.transpose(Image.FLIP_LEFT_RIGHT)
+        ghost_up_going_left.append(gif_frame.copy())
+    frames.append(ghost_up_going_left)
+
+    ghost_down_going_right = []
+    for gif_frame in ghost_up_going_right:
+        new_frame = Image.new(gif_frame.mode, gif_frame.size)
+        new_frame.paste(gif_frame, (0, 8))
+        ghost_down_going_right.append(new_frame)
+    frames.append(ghost_down_going_right)
+
+    ghost_down_going_left = []
+    for gif_frame in ghost_up_going_left:
+        new_frame = Image.new(gif_frame.mode, gif_frame.size)
+        new_frame.paste(gif_frame, (0, 8))
+        ghost_down_going_left.append(new_frame)
+    frames.append(ghost_down_going_left)
+
+    ghost_both_up_going_left = []
+    for i in range(0, len(ghost_down_going_right)):
+        tmp = ghost_up_going_left[i]
+        up = ghost_up_going_left[i].copy().crop((0,0,4*5,7))
+        down = ghost_down_going_right[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        ghost_both_up_going_left.append(new_frame)
+    frames.append(ghost_both_up_going_left)
+
+    ghost_both_up_going_right = []
+    for i in range(0, len(ghost_down_going_left)):
+        tmp = ghost_up_going_right[i]
+        up = ghost_up_going_right[i].copy().crop((0,0,4*5,7))
+        down = ghost_down_going_left[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        ghost_both_up_going_left.append(new_frame)
+    frames.append(ghost_both_up_going_right)
+
+    ghost_both_going_right = []
+    for i in range(0, len(ghost_down_going_right)):
+        tmp = ghost_up_going_right[i]
+        up = ghost_up_going_right[i].copy().crop((0,0,4*5,7))
+        down = ghost_down_going_right[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        ghost_both_going_right.append(new_frame)
+    frames.append(ghost_both_going_right)
+
+    ghost_both_going_left = []
+    for i in range(0, len(ghost_down_going_left)):
+        tmp = ghost_up_going_left[i]
+        up = ghost_up_going_left[i].copy().crop((0,0,4*5,7))
+        down = ghost_down_going_left[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        ghost_both_going_left.append(new_frame)
+    frames.append(ghost_both_going_left)
+
+    return frames
 
 
 with open("pacman.mod", "rb") as input_file:
@@ -152,9 +307,6 @@ with open("pacman.mod", "rb") as input_file:
 
 # No sanity checks
 songname = data[0:20]
-
-# TODO
-# samples
 
 songlength = data[950]
 restart_position = data[951]
@@ -216,81 +368,13 @@ samples_start = current_pos
 
 frames = []
 
-gif = Image.open("img/animation.gif")
+pacman_frames = add_pacman()
+for pacman_frame in pacman_frames:
+    add_frames(frames, pacman_frame)
 
-pacmac_up_going_right = []
-#gif_frames = ImageSequence.Iterator(gif)
-for gif_frame in ImageSequence.Iterator(gif):
-    pacmac_up_going_right.append(gif_frame.copy())
-
-pacmac_up_going_left = []
-for gif_frame in pacmac_up_going_right:
-    gif_frame = gif_frame.transpose(Image.FLIP_LEFT_RIGHT)
-    pacmac_up_going_left.append(gif_frame.copy())
-
-pacman_down_going_right = []
-for gif_frame in pacmac_up_going_right:
-    new_frame = Image.new(gif_frame.mode, gif_frame.size)
-    new_frame.paste(gif_frame, (0, 8))
-    pacman_down_going_right.append(new_frame)
-
-pacman_down_going_left = []
-for gif_frame in pacmac_up_going_left:
-    new_frame = Image.new(gif_frame.mode, gif_frame.size)
-    new_frame.paste(gif_frame, (0, 8))
-    pacman_down_going_left.append(new_frame)
-
-pacman_both_up_going_left = []
-for i in range(0, len(pacman_down_going_right)):
-    tmp = pacmac_up_going_left[i]
-    up = pacmac_up_going_left[i].copy().crop((0,0,4*5,7))
-    down = pacman_down_going_right[i].copy().crop((0,8,4*5,15))
-    new_frame = Image.new(tmp.mode, tmp.size)
-    new_frame.paste(up, (0,0))
-    new_frame.paste(down, (0, 8))
-    pacman_both_up_going_left.append(new_frame)
-
-pacman_both_up_going_right = []
-for i in range(0, len(pacman_down_going_left)):
-    tmp = pacmac_up_going_right[i]
-    up = pacmac_up_going_right[i].copy().crop((0,0,4*5,7))
-    down = pacman_down_going_left[i].copy().crop((0,8,4*5,15))
-    new_frame = Image.new(tmp.mode, tmp.size)
-    new_frame.paste(up, (0,0))
-    new_frame.paste(down, (0, 8))
-    pacman_both_up_going_left.append(new_frame)
-
-pacman_both_going_right = []
-for i in range(0, len(pacman_down_going_right)):
-    tmp = pacmac_up_going_right[i]
-    up = pacmac_up_going_right[i].copy().crop((0,0,4*5,7))
-    down = pacman_down_going_right[i].copy().crop((0,8,4*5,15))
-    new_frame = Image.new(tmp.mode, tmp.size)
-    new_frame.paste(up, (0,0))
-    new_frame.paste(down, (0, 8))
-    pacman_both_going_right.append(new_frame)
-
-pacman_both_going_left = []
-for i in range(0, len(pacman_down_going_left)):
-    tmp = pacmac_up_going_left[i]
-    up = pacmac_up_going_left[i].copy().crop((0,0,4*5,7))
-    down = pacman_down_going_left[i].copy().crop((0,8,4*5,15))
-    new_frame = Image.new(tmp.mode, tmp.size)
-    new_frame.paste(up, (0,0))
-    new_frame.paste(down, (0, 8))
-    pacman_both_going_left.append(new_frame)
-
-
-add_frames(frames, pacmac_up_going_right)
-add_frames(frames, pacman_down_going_right)
-add_frames(frames, pacmac_up_going_left)
-add_frames(frames, pacman_down_going_left)
-add_frames(frames, pacman_both_up_going_left)
-add_frames(frames, pacman_both_up_going_right)
-add_frames(frames, pacman_both_going_right)
-add_frames(frames, pacman_both_going_left)
-
-
+ghost_frames = add_ghost()
+for ghost_frame in ghost_frames:
+    add_frames(frames, ghost_frame)
 
 while len(frames) % 4 != 0:
     frame_no = len(frames)
@@ -347,6 +431,11 @@ for frame in frames:
             pattern.rows.append(row)
         new_patterns.append(pattern)
         pattern = Pattern()
+
+
+if len(new_patterns) > 100:
+    new_patterns = new_patterns[:99]
+
 
 
 for i in range(0, len(new_patterns)):
