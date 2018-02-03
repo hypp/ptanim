@@ -145,6 +145,17 @@ def add_frames(frames, pacman_up_going_right):
 
         frames.append(frame)
 
+def add_death():
+
+    gif = Image.open("img/animation_death.gif")
+
+    pacman_dies = []
+    for gif_frame in ImageSequence.Iterator(gif):
+        pacman_dies.append(gif_frame.copy())
+
+    return pacman_dies
+    
+
 def add_pacman():
 
     frames = []
@@ -393,7 +404,7 @@ pacman_frames = add_pacman()
 ghost_frames = add_ghost()
 pacman_right_ghost_left_frame = merge_up_and_down(pacman_frames[0], ghost_frames[3])
 pacman_left_ghost_right_frame = merge_up_and_down(ghost_frames[1], pacman_frames[2])
- 
+death_frames = add_death()
 
 
 # Running order
@@ -423,11 +434,9 @@ add_frames(frames, ghost_frames[0])
 add_frames(frames, pacman_frames[5])
 # ghost ->
 add_frames(frames, ghost_frames[2])
-# pacman -> ghost <-
-add_frames(frames, pacman_right_ghost_left_frame)
+# pacman dies
+add_frames(frames, death_frames)
 
-# pacman -> ghost <-
-add_frames(frames, pacman_right_ghost_left_frame)
 
 
 while len(frames) % 4 != 0:
