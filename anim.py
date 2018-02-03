@@ -281,34 +281,34 @@ frames[0].rows[0].channels[0].params = 0x3
     
 # Grab one row from the original patterns
 # and store it at pos 7 in the frames
-i = 0
-for pattern in patterns:
-    for row in pattern.rows:
-        frame = frames[i]
+play_position = 0
+pattern_position = 0
+for frame in frames:
+    current_pattern = patterns[pattern_sequence[play_position]]
+    row = current_pattern.rows[pattern_position]
 
-        frame.rows[7].channels[0].period = row.channels[0].period
-        frame.rows[7].channels[0].instrument = row.channels[0].instrument
-        frame.rows[7].channels[0].effect = row.channels[0].effect
-        frame.rows[7].channels[0].params = row.channels[0].params
+    frame.rows[7].channels[0].period = row.channels[0].period
+    frame.rows[7].channels[0].instrument = row.channels[0].instrument
+    frame.rows[7].channels[0].effect = row.channels[0].effect
+    frame.rows[7].channels[0].params = row.channels[0].params
 
-        frame.rows[7].channels[1].period = row.channels[1].period
-        frame.rows[7].channels[1].instrument = row.channels[1].instrument
-        frame.rows[7].channels[1].effect = row.channels[1].effect
-        frame.rows[7].channels[1].params = row.channels[1].params
+    frame.rows[7].channels[1].period = row.channels[1].period
+    frame.rows[7].channels[1].instrument = row.channels[1].instrument
+    frame.rows[7].channels[1].effect = row.channels[1].effect
+    frame.rows[7].channels[1].params = row.channels[1].params
 
-        frame.rows[7].channels[2].period = row.channels[2].period
-        frame.rows[7].channels[2].instrument = row.channels[2].instrument
+    frame.rows[7].channels[2].period = row.channels[2].period
+    frame.rows[7].channels[2].instrument = row.channels[2].instrument
 
-        frame.rows[7].channels[3].period = row.channels[3].period
-        frame.rows[7].channels[3].instrument = row.channels[3].instrument
-        
-        i += 1
+    frame.rows[7].channels[3].period = row.channels[3].period
+    frame.rows[7].channels[3].instrument = row.channels[3].instrument
 
-        if i >= len(frames):
-            break
-
-    if i >= len(frames):
-        break
+    pattern_position += 1
+    if pattern_position > 63:
+        pattern_position = 0
+        play_position += 1
+        if play_position >= songlength:
+            play_position = restart_position
 
 
 new_patterns = []
