@@ -196,7 +196,7 @@ def add_pacman():
         new_frame = Image.new(tmp.mode, tmp.size)
         new_frame.paste(up, (0,0))
         new_frame.paste(down, (0, 8))
-        pacman_both_up_going_left.append(new_frame)
+        pacman_both_up_going_right.append(new_frame)
     frames.append(pacman_both_up_going_right)
 
     pacman_both_going_right = []
@@ -229,18 +229,21 @@ def add_ghost():
 
     gif = Image.open("img/animation_ghost.gif")
 
+    # 0
     ghost_up_going_right = []
     #gif_frames = ImageSequence.Iterator(gif)
     for gif_frame in ImageSequence.Iterator(gif):
         ghost_up_going_right.append(gif_frame.copy())
     frames.append(ghost_up_going_right)
 
+    # 1
     ghost_up_going_left = []
     for gif_frame in ghost_up_going_right:
         gif_frame = gif_frame.transpose(Image.FLIP_LEFT_RIGHT)
         ghost_up_going_left.append(gif_frame.copy())
     frames.append(ghost_up_going_left)
 
+    # 2
     ghost_down_going_right = []
     for gif_frame in ghost_up_going_right:
         new_frame = Image.new(gif_frame.mode, gif_frame.size)
@@ -248,6 +251,7 @@ def add_ghost():
         ghost_down_going_right.append(new_frame)
     frames.append(ghost_down_going_right)
 
+    # 3
     ghost_down_going_left = []
     for gif_frame in ghost_up_going_left:
         new_frame = Image.new(gif_frame.mode, gif_frame.size)
@@ -255,6 +259,7 @@ def add_ghost():
         ghost_down_going_left.append(new_frame)
     frames.append(ghost_down_going_left)
 
+    # 4
     ghost_both_up_going_left = []
     for i in range(0, len(ghost_down_going_right)):
         tmp = ghost_up_going_left[i]
@@ -266,6 +271,7 @@ def add_ghost():
         ghost_both_up_going_left.append(new_frame)
     frames.append(ghost_both_up_going_left)
 
+    # 5
     ghost_both_up_going_right = []
     for i in range(0, len(ghost_down_going_left)):
         tmp = ghost_up_going_right[i]
@@ -274,9 +280,10 @@ def add_ghost():
         new_frame = Image.new(tmp.mode, tmp.size)
         new_frame.paste(up, (0,0))
         new_frame.paste(down, (0, 8))
-        ghost_both_up_going_left.append(new_frame)
+        ghost_both_up_going_right.append(new_frame)
     frames.append(ghost_both_up_going_right)
 
+    # 6
     ghost_both_going_right = []
     for i in range(0, len(ghost_down_going_right)):
         tmp = ghost_up_going_right[i]
@@ -288,6 +295,7 @@ def add_ghost():
         ghost_both_going_right.append(new_frame)
     frames.append(ghost_both_going_right)
 
+    # 7
     ghost_both_going_left = []
     for i in range(0, len(ghost_down_going_left)):
         tmp = ghost_up_going_left[i]
@@ -300,6 +308,19 @@ def add_ghost():
     frames.append(ghost_both_going_left)
 
     return frames
+
+def merge_up_and_down(up_in, down_in):
+    frames = []
+    for i in range(0, len(up_in)):
+        tmp = up_in[0]
+        up = up_in[i].copy().crop((0,0,4*5,7))
+        down = down_in[i].copy().crop((0,8,4*5,15))
+        new_frame = Image.new(tmp.mode, tmp.size)
+        new_frame.paste(up, (0,0))
+        new_frame.paste(down, (0, 8))
+        frames.append(new_frame)
+    return frames
+
 
 
 with open("pacman.mod", "rb") as input_file:
@@ -369,12 +390,45 @@ samples_start = current_pos
 frames = []
 
 pacman_frames = add_pacman()
-for pacman_frame in pacman_frames:
-    add_frames(frames, pacman_frame)
-
 ghost_frames = add_ghost()
-for ghost_frame in ghost_frames:
-    add_frames(frames, ghost_frame)
+pacman_right_ghost_left_frame = merge_up_and_down(pacman_frames[0], ghost_frames[3])
+pacman_left_ghost_right_frame = merge_up_and_down(ghost_frames[1], pacman_frames[2])
+ 
+
+
+# Running order
+# pacman ->
+add_frames(frames, pacman_frames[0])
+# ghost <-
+add_frames(frames, ghost_frames[3])
+# pacman <-
+add_frames(frames, pacman_frames[3])
+# ghost ->
+add_frames(frames, ghost_frames[0])
+# pacman -> ghost <-
+add_frames(frames, pacman_right_ghost_left_frame)
+# ghost <-
+add_frames(frames, ghost_frames[1])
+# pacman <-
+add_frames(frames, pacman_frames[1])
+# ghost <- ghost ->
+add_frames(frames, ghost_frames[5])
+# pacman <- ghost ->
+add_frames(frames, pacman_left_ghost_right_frame)
+# pacman ->
+add_frames(frames, pacman_frames[0])
+# ghost ->
+add_frames(frames, ghost_frames[0])
+# pacman <- pacman ->
+add_frames(frames, pacman_frames[5])
+# ghost ->
+add_frames(frames, ghost_frames[2])
+# pacman -> ghost <-
+add_frames(frames, pacman_right_ghost_left_frame)
+
+# pacman -> ghost <-
+add_frames(frames, pacman_right_ghost_left_frame)
+
 
 while len(frames) % 4 != 0:
     frame_no = len(frames)
