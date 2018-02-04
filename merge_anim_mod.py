@@ -4,7 +4,7 @@
 
 import sys
 from PIL import Image, ImageSequence
-
+import argparse
 
 class Channel(object):
     def __init__(self):
@@ -152,7 +152,22 @@ def add_frames(frames, gif_frames):
     for gif_frame in gif_frames:
         add_frame(frames, gif_frame)
 
-with open("pacman.mod", "rb") as input_file:
+
+parser = argparse.ArgumentParser(description='Merge a ProTracker mod and an animation')
+
+parser.add_argument('--verbose', '-v', action='store_true', help='Write more information to stdout')
+parser.add_argument('inputmodfile', metavar='<inputmodfile>', help='Modfile to convert')
+parser.add_argument('inputgiffile', metavar='<inputgiffile>', help='Giffile to convert')
+parser.add_argument('outputmodfile', metavar='<outputmodfile>', help='Modfile to create')
+
+args = parser.parse_args()
+
+inmod = args.inputmodfile
+outmod = args.outputmodfile
+ingif = args.inputgiffile
+verbose = args.verbose
+
+with open(inmod, "rb") as input_file:
     data = bytearray(input_file.read())
 
 # No sanity checks
@@ -171,16 +186,16 @@ version_mark = data[1080:1080+4]
 data[1080+1] = "!"
 data[1080+3] = "!"
 
-
 pattern_data = data
 
-print "%s" % len(data)
+if verbose:
+    print "%s" % len(data)
 
-print "songname: %s" % (songname)
-print "songlength: %s" % (songlength)
-print "restart_position: %s" % (restart_position)
-print "pattern_sequence: %s" % (pattern_sequence)
-print "version_mark: %s" % (version_mark)
+    print "songname: %s" % (songname)
+    print "songlength: %s" % (songlength)
+    print "restart_position: %s" % (restart_position)
+    print "pattern_sequence: %s" % (pattern_sequence)
+    print "version_mark: %s" % (version_mark)
 
 patterns = []
 
@@ -222,7 +237,7 @@ samples_start = current_pos
 
 frames = []
 
-gif = Image.open("anim_generated.gif")
+gif = Image.open(ingif)
 
 for gif_frame in ImageSequence.Iterator(gif):
     add_frame(frames, gif_frame)
@@ -237,7 +252,8 @@ while len(frames) < 101*4:
 frames[0].rows[0].channels[0].effect = 0xf
 frames[0].rows[0].channels[0].params = 0x3
 
-print "len: %s" % (len(frames))
+if verbose:
+    print "len: %s" % (len(frames))
     
 # Grab one row from the original patterns
 # and store it at pos 7 in the frames
@@ -294,13 +310,13 @@ if len(new_patterns) > 100:
 new_patterns[-1].rows[52].channels[0].effect = 0xf
 new_patterns[-1].rows[52].channels[0].params = 0x0
 
-
+# Generate new song sequence
 for i in range(0, len(new_patterns)):
     data[952+i] = i
 
 data[950] = len(new_patterns)+1
 
-with open("anim2.mod", "wb") as output_file:
+with open(outmod, "wb") as output_file:
     output_file.write(data[0:1084])
     for pattern in new_patterns:
         output_file.write(pattern.to_bytes())
