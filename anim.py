@@ -452,6 +452,9 @@ while len(frames) % 4 != 0:
 frames[0].rows[0].channels[0].effect = 0xf
 frames[0].rows[0].channels[0].params = 0x3
     
+print "len: %s" % (len(frames))
+
+
 # Grab one row from the original patterns
 # and store it at pos 7 in the frames
 play_position = 0

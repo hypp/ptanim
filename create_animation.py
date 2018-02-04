@@ -254,6 +254,11 @@ frames += ghost_frames[2]
 # pacman dies
 frames += death_frames
 
+while len(frames) < 101*4:
+    # Add empty frames
+    frames.append(death_frames[0])
+
+print "len: %s" % (len(frames))
 
 im = frames[0]
 im.save("anim_generated.gif",save_all=True, background=0, append_images=frames)
