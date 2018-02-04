@@ -8,5 +8,5 @@ all: $(TARGETS)
 	sox $< -b 8 -r 11025 -t raw $@
 
 
-animated_mod: merge_anim_mod.py pacman.mod anim_generated.gif anim2.mod
+animated_mod: merge_anim_mod.py pacman.mod anim_generated.gif
 	python merge_anim_mod.py pacman.mod anim_generated.gif anim2.mod
