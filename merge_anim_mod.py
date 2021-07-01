@@ -263,21 +263,33 @@ for frame in frames:
     current_pattern = patterns[pattern_sequence[play_position]]
     row = current_pattern.rows[pattern_position]
 
-    frame.rows[7].channels[0].period = row.channels[0].period
-    frame.rows[7].channels[0].instrument = row.channels[0].instrument
-    frame.rows[7].channels[0].effect = row.channels[0].effect
-    frame.rows[7].channels[0].params = row.channels[0].params
+    frame.rows[7].channels[0].period = row.channels[3].period
+    frame.rows[7].channels[0].instrument = row.channels[3].instrument
+    if row.channels[3].effect == 0xd:
+        frame.rows[7].channels[0].effect = 0
+        pattern_position = 63
+    else:
+        frame.rows[7].channels[0].effect = row.channels[3].effect
+    frame.rows[7].channels[0].params = row.channels[3].params
 
-    frame.rows[7].channels[1].period = row.channels[1].period
-    frame.rows[7].channels[1].instrument = row.channels[1].instrument
-    frame.rows[7].channels[1].effect = row.channels[1].effect
-    frame.rows[7].channels[1].params = row.channels[1].params
+    frame.rows[7].channels[1].period = row.channels[2].period
+    frame.rows[7].channels[1].instrument = row.channels[2].instrument
+    if row.channels[2].effect == 0xd:
+        frame.rows[7].channels[1].effect = 0
+        pattern_position = 63
+    else:
+        frame.rows[7].channels[1].effect = row.channels[2].effect
+    frame.rows[7].channels[1].params = row.channels[2].params
 
-    frame.rows[7].channels[2].period = row.channels[2].period
-    frame.rows[7].channels[2].instrument = row.channels[2].instrument
+    frame.rows[7].channels[2].period = row.channels[1].period
+    frame.rows[7].channels[2].instrument = row.channels[1].instrument
+    if row.channels[1].effect == 0xd:
+        pattern_position = 63
 
-    frame.rows[7].channels[3].period = row.channels[3].period
-    frame.rows[7].channels[3].instrument = row.channels[3].instrument
+    frame.rows[7].channels[3].period = row.channels[0].period
+    frame.rows[7].channels[3].instrument = row.channels[0].instrument
+    if row.channels[0].effect == 0xd:
+        pattern_position = 63
 
     pattern_position += 1
     if pattern_position > 63:
